@@ -1,6 +1,10 @@
-import strutils
+import strutils, sequtils
 
 const inputFile: string = "input.txt"
+
+# --------------------------------------------- #
+#               Part 1 Code                     #
+# --------------------------------------------- #
 
 #read the inputfile in
 let fileIn = readFile(inputFile)
@@ -23,8 +27,26 @@ for fruit in contents:
         sum = 0
 
 #get the largest sum from the list
-let giantElf = max(elves)
+var giantElf = max(elves)
 
-echo giantElf #69206
+echo "Largest Single Elf: " & $giantElf
 
 
+# --------------------------------------------- #
+#               Part 2 Code                     #
+# --------------------------------------------- #
+
+
+#[loop through the list thrice
+get the index of the largest value,
+add the value at that index to the running sum
+then delete that value from the list]#
+
+giantElf = 0
+
+for i in 0..2:
+    var e = elves.maxIndex()
+    giantElf += elves[e]
+    elves.del(e)
+
+echo "Total calories for top 3 elves: " & $giantElf 
