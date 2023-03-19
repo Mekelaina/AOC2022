@@ -20,11 +20,25 @@ proc charToItem(inChar: char): Res =
     else:
         result.err "Invalid Character"            
 
+proc splitInHalf(s: string): (string, string) =
+    var 
+        first: string
+        second: string
+    if len(s) mod 2 == 0:
+        #echo "even"    
+        first  = s[0..<len(s) div 2]
+        second = s[len(s) div 2..^1]
+    else:
+        #echo "odd"
+        first  = s[0..<len(s) div 2]
+        second = s[(len(s) div 2)+1..^1]
+    
+    result = (first, second)
 
 #!TODO -- finish implementation
 proc findMatchInContainers(first: openArray[Item], second: openArray[Item]): Res =
     for item in Item:
-        if second.contains(item) and second.contains(item):
+        if first.contains(item) and second.contains(item):
             return ok(item)
         result.err "Bad Input"
 
@@ -42,19 +56,21 @@ proc parseContainer(s: string): seq[Item] =
     return hold
 
 
-#hacky but promt assures all lines are even length
-for line in lines "test.txt":
-    var 
-        half   = int(len(line)/2)
-        first  = line.substr(low(line), half)
-        second = line.substr(half, high(line))
-    var 
-        f = parseContainer(first)
-        s = parseContainer(second)
-    #echo $f & $s
+var lineSums: int
 
-    echo findMatchInContainers(f, s)
+for line in lines "input.txt":
 
+    let 
+        (f, s) = splitInHalf(line) 
+        match = findMatchInContainers(parseContainer(f), parseContainer(s))
+
+    if match.isOk:
+        lineSums += ord(match.get())
+    else:
+        echo match.error
+        break
+
+echo lineSums
 
 
 
