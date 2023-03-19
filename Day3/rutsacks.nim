@@ -25,18 +25,21 @@ proc splitInHalf(s: string): (string, string) =
         first: string
         second: string
     if len(s) mod 2 == 0:
-        #echo "even"    
         first  = s[0..<len(s) div 2]
         second = s[len(s) div 2..^1]
     else:
-        #echo "odd"
         first  = s[0..<len(s) div 2]
-        second = s[(len(s) div 2)+1..^1]
-    
+        second = s[(len(s) div 2)+1..^1]  
     result = (first, second)
 
-#!TODO -- finish implementation
-proc findMatchInContainers(first: openArray[Item], second: openArray[Item]): Res =
+proc findMatchInThreeContainers(first: openArray[Item], second: openArray[Item], 
+    third: openArray[Item]): Res =
+    for item in Item:
+        if first.contains(item) and second.contains(item) and third.contains(item):
+            return ok(item)
+    result.err "Bad Input"
+
+proc findMatchInTwoContainers(first: openArray[Item], second: openArray[Item]): Res =
     for item in Item:
         if first.contains(item) and second.contains(item):
             return ok(item)
@@ -55,22 +58,38 @@ proc parseContainer(s: string): seq[Item] =
             hold.add(res.get)
     return hold
 
+var 
+    oneLineSum: int
+    threeLineSum: int
+    match1, match2: Res
+    
+let file = readFile("input.txt").splitLines
 
-var lineSums: int
-
-for line in lines "input.txt":
-
-    let 
-        (f, s) = splitInHalf(line) 
-        match = findMatchInContainers(parseContainer(f), parseContainer(s))
-
-    if match.isOk:
-        lineSums += ord(match.get())
+for count, line in file:
+    let (f, s) = splitInHalf(line) 
+    match1 = findMatchInTwoContainers(parseContainer(f), parseContainer(s))
+    if match1.isOk:
+        oneLineSum += ord(match1.get())
     else:
-        echo match.error
+        echo match1.error
         break
 
-echo lineSums
+    if (count + 1) mod 3 == 0:
+        match2 = findMatchInThreeContainers(parseContainer(line), 
+        parseContainer(file[count-1]), parseContainer(file[count-2]))
+        if match2.isOk:
+            threeLineSum += ord(match2.get())
+        else:
+            echo match2.error
+            break
+
+echo oneLineSum
+echo threeLineSum
+
+    
+
+
+
 
 
 
