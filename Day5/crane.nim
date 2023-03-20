@@ -45,14 +45,20 @@ proc parseInstructions(instr: openArray[string]): seq[Op] =
         ops.add(op)
     result = ops
 
-proc executeOp(source: var seq[string], dest: var seq[string], count: int) =
-    for i in 0..count-1:
-        dest.add(source.pop)
+proc executeOp(source: var seq[string], dest: var seq[string], count: int, asStack: bool) =
+    if asStack:
+        for i in 0..count-1:
+            dest.add(source.pop)
+    else:
+        var temp: seq[string]
+        for i in 0..count-1:
+            temp.add(source.pop)
+        for j in 0..count-1:
+            dest.add(temp.pop)
 
-proc executeOperations(crane: var seq[seq[string]], ops: openArray[Op]) = 
+proc executeOperations(crane: var seq[seq[string]], ops: openArray[Op], asStack: bool) = 
     for op in ops:
-        #echo "huh"
-        executeOp(crane[op.source-1], crane[op.dest-1], op.count)    
+        executeOp(crane[op.source-1], crane[op.dest-1], op.count, asStack)    
 
 
 
@@ -72,8 +78,10 @@ while i >= data.low:
 
 var ops = parseInstructions(slurpInstructions(file))
 
-executeOperations(crane, ops)
+var crane2 = crane
 
+executeOperations(crane, ops, false)
+executeOperations(crane2, ops, true)
 var res: string
 
 for x in crane:
@@ -83,4 +91,12 @@ for x in crane:
     res.add(val)
 
 echo res
+res = ""
 
+for y in crane2:
+    var val = y[^1]
+    val.removePrefix('[')
+    val.removeSuffix(']')
+    res.add(val)
+
+echo res
