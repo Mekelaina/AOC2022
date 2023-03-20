@@ -26,9 +26,14 @@ proc checkForStart(s: string): bool =
 
 let input = readFile("input.txt")
 
-
+#part one
 for i in input.low..input.high-3:
     if checkForStart(input[i..i+3]):
         echo i+4
         break
 
+#huh didnt expect it to be that simple
+for i in input.low..input.high-12:
+    if checkForStart(input[i..i+12]):
+        echo i+14
+        break
